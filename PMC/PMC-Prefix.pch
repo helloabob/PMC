@@ -11,4 +11,12 @@
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
+
+    #import <PMCCommonUtilities/PMCCommonUtilities.h>
+
 #endif
+
+
+#define app_default_background_color [UIColor colorWithRed:90.0/255.0 green:140.0/255.0 blue:181.0/255.0 alpha:1]
+
+#define maxDimmingLevel 220.0f

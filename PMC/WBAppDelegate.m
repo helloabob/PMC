@@ -8,7 +8,9 @@
 
 #import "WBAppDelegate.h"
 
-#import "WBViewController.h"
+#import "IndexViewController.h"
+
+
 
 @implementation WBAppDelegate
 
@@ -19,12 +21,83 @@
     [super dealloc];
 }
 
+- (void)recei:(NSNotification *)notif {
+    NSDictionary *dict = notif.userInfo;
+    if ([dict objectForKey:@"task"]) {
+//        DBProcessTask *task = [dict objectForKey:@"task"];
+    }
+}
+
+//register info 
+- (void)registerData {
+    NSString *path = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"poe.db"];
+    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
+    [[DBHelper sharedInstance] setDBPath:path];
+    DBProcessTask *task = [[DBProcessTask alloc] init];
+    task.sql = @"CREATE TABLE IF NOT EXISTS light_mstr(light_id INTEGER PRIMARY KEY AUTOINCREMENT, light_office_id TEXT, light_group_id INTEGER, light_mac TEXT, light_ip TEXT); CREATE TABLE IF NOT EXISTS office_mstr(office_id TEXT PRIMARY KEY , office_desc TEXT, office_image_url TEXT); CREATE TABLE IF NOT EXISTS scene_mstr(scene_id INTEGER PRIMARY KEY AUTOINCREMENT, scene_name TEXT, scene_resource_id INTEGER, scene_bright INTEGER);";
+//    task.notificationName = @"createDB";
+    task.taskType = TaskCreateTable;
+    [[DBHelper sharedInstance] doTask:task];
+    [task release];
+    task = nil;
+    
+    NSString *office_id = @"No2_2F20#";
+    
+    task = [[DBProcessTask alloc] init];
+    task.sql = [NSString stringWithFormat:@"INSERT INTO office_mstr(office_id) VALUES(\"%@\")",office_id];
+    task.taskType = TaskExecCommand;
+    [[DBHelper sharedInstance] doTask:task];
+    [task release];
+    task = nil;
+    
+    NSArray *arrayMAC = [NSArray arrayWithObjects:@"706f77d54031", @"706f77d63964", @"706f77d72756", @"706f77d82750", nil];
+    NSArray *arrayIP = [NSArray arrayWithObjects:@"192.168.1.138", @"192.168.1.140", @"192.168.1.142", @"192.168.1.149", nil];
+    
+    for (int i = 0; i < 4; i ++) {
+        task = [[DBProcessTask alloc] init];
+        task.sql = [NSString stringWithFormat:@"INSERT INTO light_mstr (light_office_id, light_mac, light_ip) VALUES(\"%@\", \"%@\", \"%@\")",office_id, [arrayMAC objectAtIndex:i], [arrayIP objectAtIndex:i]];
+        task.taskType = TaskExecCommand;
+        [[DBHelper sharedInstance] doTask:task];
+        if (task.resultCode == -1) {
+            NSLog(@"error in %d",i+1);
+        }
+        [task release];
+        task = nil;
+    }
+    NSArray *arrayScene = [NSArray arrayWithObjects:@"Presentation", @"Meeting", @"Working", @"Leisure", nil];
+    for (int i = 0; i < 4; i ++) {
+        for (int j = 0; j < 4; j ++) {
+            task = [[DBProcessTask alloc] init];
+            task.sql = [NSString stringWithFormat:@"INSERT INTO scene_mstr (scene_name, scene_resource_id, scene_bright) VALUES(\"%@\", %d, %d)", [arrayScene objectAtIndex:i], j+1, 100];
+            task.taskType = TaskExecCommand;
+            [[DBHelper sharedInstance] doTask:task];
+            if (task.resultCode == -1) {
+                NSLog(@"error in %d",i+1);
+            }
+            [task release];
+        }
+    }
+    
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
+    //register user default data.
+    [self registerData];
+//    [ConfigurationManager registerDefaultData];
+    
+    [application setStatusBarStyle:UIStatusBarStyleBlackOpaque];
+    
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
-    self.viewController = [[[WBViewController alloc] initWithNibName:@"WBViewController" bundle:nil] autorelease];
-    self.window.rootViewController = self.viewController;
+    self.viewController = [[[IndexViewController alloc] initWithNibName:@"IndexViewController" bundle:nil] autorelease];
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.viewController];
+    
+    nav.navigationBar.tintColor = [UIColor blackColor];
+    
+    self.window.rootViewController = nav;
     [self.window makeKeyAndVisible];
     return YES;
 }

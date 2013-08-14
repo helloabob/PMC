@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@class WBViewController;
+@class IndexViewController;
 
 @interface WBAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (strong, nonatomic) WBViewController *viewController;
+@property (strong, nonatomic) IndexViewController *viewController;
 
 @end
