@@ -8,6 +8,8 @@
 
 #import "WBSceneConfigVC.h"
 
+#import "UISlider+ExtraProperty.h"
+
 @interface WBSceneConfigVC ()
 
 @end
@@ -15,7 +17,7 @@
 @implementation WBSceneConfigVC
 
 - (void)dealloc {
-    self.sceneName = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UITextFieldTextDidChangeNotification object:nil];
     self.lights = nil;
     [super dealloc];
 }
@@ -84,16 +86,44 @@
     [item1 release];
     [item2 release];
     
-    self.lights = [[PMCTool sharedInstance] getLightsForScene:self.sceneName];
+    self.lights = [[PMCTool sharedInstance] getLightsForScene:_sceneId];
     self.tbl.delegate = self;
     self.tbl.dataSource = self;
     self.tbl.scrollEnabled = NO;
     
-    self.txtSceneName.text = self.sceneName;
+    self.txtSceneName.text = [[_lights objectAtIndex:0] objectAtIndex:3];
+    self.txtSceneName.delegate = self;
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(txtValueChanged:) name:UITextFieldTextDidChangeNotification object:nil];
+}
+
+- (void)txtValueChanged:(NSNotification *)notif {
+    if (self.txtSceneName.text.length > 13) {
+        self.txtSceneName.text = [self.txtSceneName.text substringToIndex:13];
+    }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
 }
 
 - (void)save {
-    
+    NSMutableArray *array = [NSMutableArray array];
+    for (int i = 0; i < self.lights.count; i ++) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        [dict setObject:[[_lights objectAtIndex:i] objectAtIndex:2] forKey:@"scene_resource_id"];
+        UITableViewCell *cell = [_tbl cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        NSNumber *dimming = [NSNumber numberWithFloat:((UISlider *)[cell.contentView.subviews lastObject]).value];
+        [dict setObject:dimming forKey:@"scene_bright"];
+        [array addObject:dict];
+    }
+    if (array.count > 0) {
+        [[PMCTool sharedInstance] updateLightsForScene:_sceneId withData:array withSceneName:self.txtSceneName.text];
+//        [[PMCTool sharedInstance] updateLightsForScene:self.sceneName withData:array];
+    }
+    [self.navigationController popViewControllerAnimated:YES];
+//    [self dismissModalViewControllerAnimated:YES];
 }
 
 - (void)cancel {
@@ -130,8 +160,8 @@
     if (cell==nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
 //        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.textLabel.backgroundColor = [UIColor clearColor];
-        cell.textLabel.frame = CGRectMake(40, cell.textLabel.frame.origin.y, cell.textLabel.frame.size.width, cell.textLabel.frame.size.height);
+//        cell.textLabel.backgroundColor = [UIColor clearColor];
+//        cell.textLabel.frame = CGRectMake(40, cell.textLabel.frame.origin.y, cell.textLabel.frame.size.width, cell.textLabel.frame.size.height);
         
         UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(20, 7, 60, 30)];
         lbl.backgroundColor = [UIColor clearColor];
@@ -144,11 +174,13 @@
         iv.minimumValue = 1;
         iv.maximumValue = maxDimmingLevel;
         iv.frame = CGRectMake(80, 10, 200, 25);
+        [iv addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
         [cell.contentView addSubview:iv];
         [iv release];
         
     }
     ((UISlider *)[cell.contentView.subviews lastObject]).value = [[[_lights objectAtIndex:indexPath.row] objectAtIndex:1] intValue];
+    ((UISlider *)[cell.contentView.subviews lastObject]).ip = [[_lights objectAtIndex:indexPath.row] objectAtIndex:0];
     NSString *str = [NSString stringWithFormat:@"Light%@",[[_lights objectAtIndex:indexPath.row] objectAtIndex:2]];
     ((UILabel *)[cell.contentView.subviews objectAtIndex:cell.contentView.subviews.count-2]).text = str;
     
@@ -174,6 +206,10 @@
     // Configure the cell...
     
     return cell;
+}
+
+- (void)sliderValueChanged:(UISlider *)slider {
+    [[PMCTool sharedInstance] changeLightDimming:slider.value ForIP:slider.ip];
 }
 //
 //- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

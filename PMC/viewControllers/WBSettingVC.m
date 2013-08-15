@@ -10,8 +10,11 @@
 
 #import "WBSceneConfigVC.h"
 
+#import "WBMonitorViewController.h"
+
 @interface WBSettingVC () {
     BOOL isExpand;
+    UITableView *_tblView;
 }
 
 @end
@@ -42,8 +45,21 @@
     tbl.dataSource = self;
     [self.view addSubview:tbl];
     [tbl release];
+    _tblView = tbl;
     
-    self.scenes = [[[PMCTool sharedInstance] getScenes] retain];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    isExpand = YES;
+    self.scenes = [[PMCTool sharedInstance] getScenes];
+    [_tblView reloadData];
+    
+//    [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(tt) userInfo:nil repeats:NO];
+}
+
+- (void)tt {
+    NSLog(@"%f",[_tblView rowHeight]);
 }
 
 - (void)didReceiveMemoryWarning
@@ -59,6 +75,13 @@
     //#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (isExpand == YES && indexPath.row > 0 && indexPath.row <= _scenes.count) {
+        return 38.0;
+    }
+    return 44.0f;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -91,10 +114,16 @@
         
         UIImageView *iv = [[UIImageView alloc] init];
         iv.frame = CGRectMake(10, 10, 25, 25);
+        iv.contentMode = UIViewContentModeScaleAspectFit;
         [cell.contentView addSubview:iv];
         [iv release];
         
     }
+    cell.backgroundColor = [UIColor whiteColor];
+    UIImageView *iv = ((UIImageView *)[cell.contentView.subviews lastObject]);
+    UILabel *lbl = ((UILabel *)[cell.contentView.subviews objectAtIndex:cell.contentView.subviews.count-2]);
+    iv.frame = CGRectMake(10, 10, 25, 25);
+    lbl.frame = CGRectMake(50, 7, 200, 30);
     if (indexPath.row == 0) {
         ((UIImageView *)[cell.contentView.subviews lastObject]).image = [UIImage imageNamed:@"configuration_icon"];
         ((UILabel *)[cell.contentView.subviews objectAtIndex:cell.contentView.subviews.count-2]).text = @"Configuration";
@@ -102,6 +131,9 @@
         ((UIImageView *)[cell.contentView.subviews lastObject]).image = [UIImage imageNamed:@"monitor_icon"];
         ((UILabel *)[cell.contentView.subviews objectAtIndex:cell.contentView.subviews.count-2]).text = @"Monitor";
     } else {
+        iv.frame = CGRectMake(40, 7, 25, 25);
+        lbl.frame = CGRectMake(80, 4, 200, 30);
+        cell.backgroundColor = [UIColor colorWithRed:237.0/255.0 green:237.0/255.0 blue:237.0/255.0 alpha:1.0f];
         NSString *image_url = [NSString stringWithFormat:@"icon%d",indexPath.row];
         ((UIImageView *)[cell.contentView.subviews lastObject]).image = [UIImage imageNamed:image_url];
         NSString *scene_name = [[self.scenes objectAtIndex:indexPath.row - 1] objectAtIndex:0];
@@ -149,9 +181,12 @@
         [tableView endUpdates];
     } else if ((indexPath.row == 1 && isExpand == NO) || (indexPath.row == self.scenes.count+1 && isExpand == YES)) {
         //click monitor cell.
+        WBMonitorViewController *vc = [[[WBMonitorViewController alloc] init] autorelease];
+//        vc.sceneId = [[[self.scenes objectAtIndex:indexPath.row-1] objectAtIndex:1] intValue];
+        [self.navigationController pushViewController:vc animated:YES];
     } else {
         WBSceneConfigVC *vc = [[[WBSceneConfigVC alloc] init] autorelease];
-        vc.sceneName = [[self.scenes objectAtIndex:indexPath.row-1] objectAtIndex:0];
+        vc.sceneId = [[[self.scenes objectAtIndex:indexPath.row-1] objectAtIndex:1] intValue];
         [self.navigationController pushViewController:vc animated:YES];
     }
 

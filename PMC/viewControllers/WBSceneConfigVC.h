@@ -8,13 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface WBSceneConfigVC : UIViewController<UITableViewDataSource,UITableViewDelegate>
+@interface WBSceneConfigVC : UIViewController<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate>
 
 @property (nonatomic, strong) IBOutlet UITextField *txtSceneName;
 
 @property (nonatomic, strong) IBOutlet UITableView *tbl;
 
-@property (nonatomic, strong) NSString *sceneName;
+@property (nonatomic, assign) int sceneId;
 
 @property (nonatomic, strong) NSArray *lights;
 

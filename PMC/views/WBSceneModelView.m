@@ -122,6 +122,10 @@ static NSMutableDictionary *_groupRadioDic = nil;
     return self;
 }
 
+- (void)setTitle:(NSString *)title {
+    lblTitle.text = title;
+}
+
 - (void)btnTapped {
     if (_isSelected) {
         return;
@@ -131,6 +135,13 @@ static NSMutableDictionary *_groupRadioDic = nil;
     if (_delegate && [_delegate respondsToSelector:@selector(viewDidTapped:withObject:)]) {
         [_delegate viewDidTapped:lblTitle.text withObject:self];
     }
+    if (_isAutoUnselected && _isSelected) {
+        [self performSelector:@selector(delayJob) withObject:nil afterDelay:0.1f];
+    }
+}
+
+- (void)delayJob {
+    self.isSelected = NO;
 }
 
 /*

@@ -14,6 +14,8 @@
 
 @property (nonatomic, strong) NSArray *scenes;
 
+@property (nonatomic, strong) NSMutableArray *sceneViews;
+
 //@property (nonatomic, strong) NSString *office_id;
 
 @end

@@ -18,6 +18,12 @@
 
 @implementation WBGeneralControlVC
 
+- (void)dealloc {
+    self.scenes = nil;
+    self.sceneViews = nil;
+    [super dealloc];
+}
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -37,11 +43,15 @@
     
     self.scenes = [[PMCTool sharedInstance] getScenes];
 
+    self.sceneViews = [NSMutableArray array];
+    
     for (int i =0; i < self.scenes.count; i ++) {
         WBSceneModelView *smv = [[WBSceneModelView alloc] initWithFrame:CGRectMake(20, 20+(i*70), 280, 50) withIcon:[NSString stringWithFormat:@"icon%d",i+1] withTitle:[[self.scenes objectAtIndex:i] objectAtIndex:0] withGroupID:@"sceneGroup"];
         smv.delegate = self;
+        smv.tag = [[[_scenes objectAtIndex:i] objectAtIndex:1] intValue];
         [self.view addSubview:smv];
         [smv release];
+        [_sceneViews addObject:smv];
     }
     
     UISlider *slider = [[UISlider alloc] initWithFrame:CGRectMake(20, 300, 280, 35)];
@@ -54,11 +64,12 @@
     
     WBSceneModelView *sbtnn = [[WBSceneModelView alloc] initWithFrame:CGRectMake(20, 350, 120, 40) withIcon:@"turnon" withTitle:nil withGroupID:@"switchGroup"];
     sbtnn.delegate = self;
+    sbtnn.isAutoUnselected = YES;
     sbtnn.tag = 1001;
     [self.view addSubview:sbtnn];
     [sbtnn release];
     
-    WBSceneModelView *sbtnf = [[WBSceneModelView alloc] initWithFrame:CGRectMake(180, 350, 120, 40) withIcon:@"turnoff" withTitle:nil withGroupID:@"switchGroup"];
+    WBSceneModelView *sbtnf = [[WBSceneModelView alloc] initWithFrame:CGRectMake(180, 350, 120, 40) withIcon:@"turnoff" withTitle:nil withGroupID:@"sceneGroup"];
     sbtnf.delegate = self;
     sbtnf.tag = 1000;
     [self.view addSubview:sbtnf];
@@ -66,23 +77,35 @@
     
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.scenes = [[PMCTool sharedInstance] getScenes];
+    for (int i = 0; i < _sceneViews.count; i++) {
+        WBSceneModelView *smv = [_sceneViews objectAtIndex:i];
+        [smv setTitle:[[_scenes objectAtIndex:i] objectAtIndex:0]];
+    }
+}
+
 - (void)sliderChanged:(UISlider *)slider {
     [[PMCTool sharedInstance] changeAllLightDimming:slider.value];
-    
 }
 
 - (void)viewDidTapped:(NSString *)title withObject:(WBSceneModelView *)sceneModelView {
     if ([sceneModelView.groupID isEqualToString:@"switchGroup"]) {
-        if (sceneModelView.tag == 1000) {
+//        if (sceneModelView.tag == 1000) {
 //            NSLog(@"turn off");
-            [[PMCTool sharedInstance] switchAllLight:NO];
-        } else {
+//            [[PMCTool sharedInstance] switchAllLight:NO];
+//        } else {
 //            NSLog(@"turn on");
             [[PMCTool sharedInstance] switchAllLight:YES];
-        }
+//        }
     } else {
 //        NSLog(@"change scene:%@",title);
-        [[PMCTool sharedInstance] changeToScene:title];
+        if (sceneModelView.tag == 1000) {
+            [[PMCTool sharedInstance] switchAllLight:NO];
+        } else {
+            [[PMCTool sharedInstance] changeToScene:sceneModelView.tag];
+        }
     }
 }
 

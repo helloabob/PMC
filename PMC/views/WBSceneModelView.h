@@ -21,7 +21,11 @@
 
 @property (nonatomic, assign) BOOL isSelected;
 
+@property (nonatomic, assign) BOOL isAutoUnselected;
+
 - (id)initWithFrame:(CGRect)frame withIcon:(NSString *)icon withTitle:(NSString *)title withGroupID:(NSString *)groupID;
+
+- (void)setTitle:(NSString *)title;
 
 @end
 

@@ -89,6 +89,8 @@
 		2DCA52B717B8D2180007C612 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2DCA52B617B8D2180007C612 /* Default-568h@2x.png */; };
 		2DCA52BA17B8D2180007C612 /* WBViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA52B917B8D2180007C612 /* WBViewController.m */; };
 		2DCA52BD17B8D2180007C612 /* WBViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DCA52BB17B8D2180007C612 /* WBViewController.xib */; };
+		2DDA816217BC7A390003A2FE /* UISlider+ExtraProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA816117BC7A390003A2FE /* UISlider+ExtraProperty.m */; };
+		2DDA816A17BCADC10003A2FE /* WBMonitorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA816917BCADC00003A2FE /* WBMonitorViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -204,6 +206,10 @@
 		2DCA52B817B8D2180007C612 /* WBViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WBViewController.h; sourceTree = "<group>"; };
 		2DCA52B917B8D2180007C612 /* WBViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WBViewController.m; sourceTree = "<group>"; };
 		2DCA52BC17B8D2180007C612 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/WBViewController.xib; sourceTree = "<group>"; };
+		2DDA816017BC7A390003A2FE /* UISlider+ExtraProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UISlider+ExtraProperty.h"; sourceTree = "<group>"; };
+		2DDA816117BC7A390003A2FE /* UISlider+ExtraProperty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UISlider+ExtraProperty.m"; sourceTree = "<group>"; };
+		2DDA816817BCADC00003A2FE /* WBMonitorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBMonitorViewController.h; sourceTree = "<group>"; };
+		2DDA816917BCADC00003A2FE /* WBMonitorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBMonitorViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -371,6 +377,8 @@
 			children = (
 				2D88402B17B9EBAF004A139C /* WBSceneModelView.h */,
 				2D88402C17B9EBAF004A139C /* WBSceneModelView.m */,
+				2DDA816017BC7A390003A2FE /* UISlider+ExtraProperty.h */,
+				2DDA816117BC7A390003A2FE /* UISlider+ExtraProperty.m */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -462,6 +470,8 @@
 				2D883F8517B9DB3C004A139C /* WBGeneralControlVC.xib */,
 				2D88404017BA0174004A139C /* WBSettingVC.h */,
 				2D88404117BA0174004A139C /* WBSettingVC.m */,
+				2DDA816817BCADC00003A2FE /* WBMonitorViewController.h */,
+				2DDA816917BCADC00003A2FE /* WBMonitorViewController.m */,
 			);
 			path = viewControllers;
 			sourceTree = "<group>";
@@ -599,6 +609,8 @@
 				2D88402D17B9EBAF004A139C /* WBSceneModelView.m in Sources */,
 				2D88404217BA0174004A139C /* WBSettingVC.m in Sources */,
 				2D1B150317BB5CBA00EFF609 /* WBSceneConfigVC.m in Sources */,
+				2DDA816217BC7A390003A2FE /* UISlider+ExtraProperty.m in Sources */,
+				2DDA816A17BCADC10003A2FE /* WBMonitorViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
