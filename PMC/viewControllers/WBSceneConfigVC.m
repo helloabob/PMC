@@ -50,41 +50,43 @@
 ////    btn3.titleEdgeInsets = UIEdgeInsetsMake(20, 0, 0, 0);
 //    [self.view addSubview:btn3];
     
-    UIButton *btn1 = [UIButton buttonWithType:UIButtonTypeCustom];
-    [btn1 setImage:[UIImage imageNamed:@"scene_save"] forState:UIControlStateNormal];
-    [btn1 setTitle:@"Save" forState:UIControlStateNormal];
-    [btn1 setTitleColor:[UIColor colorWithRed:149.0/255.0 green:149.0/255.0 blue:149.0/255.0 alpha:1.0] forState:UIControlStateNormal];
-    btn1.titleLabel.font = [UIFont boldSystemFontOfSize:11.0f];
-    btn1.frame = CGRectMake(0, 0, 40, 40);
-    btn1.titleEdgeInsets = UIEdgeInsetsMake(35, -60, 0, 0);
-    btn1.imageEdgeInsets = UIEdgeInsetsMake(-10, 0, 0, 0);
-    [btn1 addTarget:self action:@selector(save) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *item1 = [[UIBarButtonItem alloc] initWithCustomView:btn1];
-    [item1 setWidth:155];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStyleDone target:self action:@selector(save)];
     
-    UIButton *btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
-    [btn2 setImage:[UIImage imageNamed:@"scene_cancel"] forState:UIControlStateNormal];
-    [btn2 setTitle:@"Cancel" forState:UIControlStateNormal];
-    [btn2 setTitleColor:[UIColor colorWithRed:149.0/255.0 green:149.0/255.0 blue:149.0/255.0 alpha:1.0] forState:UIControlStateNormal];
-    btn2.titleLabel.font = [UIFont boldSystemFontOfSize:11.0f];
-    btn2.frame = CGRectMake(0, 0, 40, 40);
-    btn2.titleEdgeInsets = UIEdgeInsetsMake(35, -60, 0, 0);
-    btn2.imageEdgeInsets = UIEdgeInsetsMake(-10, 0, 0, 0);
-    [btn2 addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *item2 = [[UIBarButtonItem alloc] initWithCustomView:btn2];
-    [item2 setWidth:155];
-    
-    NSArray *array = [NSArray arrayWithObjects:item1, item2, nil];
-    
-    UIToolbar *tool = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-50, 320, 50)];
-    tool.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin;
-    tool.tintColor = [UIColor blackColor];
-    [self.view addSubview:tool];
-    [tool release];
-    [tool setItems:array];
-    
-    [item1 release];
-    [item2 release];
+//    UIButton *btn1 = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [btn1 setImage:[UIImage imageNamed:@"scene_save"] forState:UIControlStateNormal];
+//    [btn1 setTitle:@"Save" forState:UIControlStateNormal];
+//    [btn1 setTitleColor:[UIColor colorWithRed:149.0/255.0 green:149.0/255.0 blue:149.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+//    btn1.titleLabel.font = [UIFont boldSystemFontOfSize:11.0f];
+//    btn1.frame = CGRectMake(0, 0, 40, 40);
+//    btn1.titleEdgeInsets = UIEdgeInsetsMake(35, -60, 0, 0);
+//    btn1.imageEdgeInsets = UIEdgeInsetsMake(-10, 0, 0, 0);
+//    [btn1 addTarget:self action:@selector(save) forControlEvents:UIControlEventTouchUpInside];
+//    UIBarButtonItem *item1 = [[UIBarButtonItem alloc] initWithCustomView:btn1];
+//    [item1 setWidth:155];
+//    
+//    UIButton *btn2 = [UIButton buttonWithType:UIButtonTypeCustom];
+//    [btn2 setImage:[UIImage imageNamed:@"scene_cancel"] forState:UIControlStateNormal];
+//    [btn2 setTitle:@"Cancel" forState:UIControlStateNormal];
+//    [btn2 setTitleColor:[UIColor colorWithRed:149.0/255.0 green:149.0/255.0 blue:149.0/255.0 alpha:1.0] forState:UIControlStateNormal];
+//    btn2.titleLabel.font = [UIFont boldSystemFontOfSize:11.0f];
+//    btn2.frame = CGRectMake(0, 0, 40, 40);
+//    btn2.titleEdgeInsets = UIEdgeInsetsMake(35, -60, 0, 0);
+//    btn2.imageEdgeInsets = UIEdgeInsetsMake(-10, 0, 0, 0);
+//    [btn2 addTarget:self action:@selector(cancel) forControlEvents:UIControlEventTouchUpInside];
+//    UIBarButtonItem *item2 = [[UIBarButtonItem alloc] initWithCustomView:btn2];
+//    [item2 setWidth:155];
+//    
+//    NSArray *array = [NSArray arrayWithObjects:item1, item2, nil];
+//    
+//    UIToolbar *tool = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-50, 320, 50)];
+//    tool.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin;
+//    tool.tintColor = [UIColor blackColor];
+//    [self.view addSubview:tool];
+//    [tool release];
+//    [tool setItems:array];
+//    
+//    [item1 release];
+//    [item2 release];
     
     self.lights = [[PMCTool sharedInstance] getLightsForScene:_sceneId];
     self.tbl.delegate = self;
@@ -159,6 +161,7 @@
     
     if (cell==nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
 //        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 //        cell.textLabel.backgroundColor = [UIColor clearColor];
 //        cell.textLabel.frame = CGRectMake(40, cell.textLabel.frame.origin.y, cell.textLabel.frame.size.width, cell.textLabel.frame.size.height);

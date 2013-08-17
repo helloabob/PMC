@@ -10,7 +10,6 @@
 
 #import "IndexViewController.h"
 
-#import "WBMonitorViewController.h"
 
 @implementation WBAppDelegate
 
@@ -119,6 +118,7 @@
     
     
     nav.navigationBar.tintColor = [UIColor blackColor];
+    nav.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIFont boldSystemFontOfSize:16.0] forKey:UITextAttributeFont];
     
     self.window.rootViewController = nav;
     [self.window makeKeyAndVisible];

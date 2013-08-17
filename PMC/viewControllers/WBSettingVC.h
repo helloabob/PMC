@@ -12,4 +12,6 @@
 
 @property(nonatomic, strong) NSArray *scenes;
 
+@property (nonatomic, strong) UITableView *tblView;
+
 @end

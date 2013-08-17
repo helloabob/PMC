@@ -78,6 +78,8 @@
 		2D88404617BA03C3004A139C /* monitor_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 2D88404417BA03C3004A139C /* monitor_icon.png */; };
 		2D88405217BA1C57004A139C /* PMCCommonUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D88405117BA1C57004A139C /* PMCCommonUtilities.framework */; };
 		2D88405617BA1D37004A139C /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D88405517BA1D37004A139C /* libsqlite3.0.dylib */; };
+		2D996AD317BE161A00B38FD7 /* WBMonitorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D996AD217BE161A00B38FD7 /* WBMonitorViewController.m */; };
+		2D996AD617BE20A700B38FD7 /* UITableViewCell+ExtraProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D996AD517BE20A700B38FD7 /* UITableViewCell+ExtraProperty.m */; };
 		2DCA52A117B8D2180007C612 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DCA52A017B8D2180007C612 /* UIKit.framework */; };
 		2DCA52A317B8D2180007C612 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DCA52A217B8D2180007C612 /* Foundation.framework */; };
 		2DCA52A517B8D2180007C612 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DCA52A417B8D2180007C612 /* CoreGraphics.framework */; };
@@ -90,7 +92,6 @@
 		2DCA52BA17B8D2180007C612 /* WBViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DCA52B917B8D2180007C612 /* WBViewController.m */; };
 		2DCA52BD17B8D2180007C612 /* WBViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2DCA52BB17B8D2180007C612 /* WBViewController.xib */; };
 		2DDA816217BC7A390003A2FE /* UISlider+ExtraProperty.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA816117BC7A390003A2FE /* UISlider+ExtraProperty.m */; };
-		2DDA816A17BCADC10003A2FE /* WBMonitorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2DDA816917BCADC00003A2FE /* WBMonitorViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -190,6 +191,10 @@
 		2D88404417BA03C3004A139C /* monitor_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = monitor_icon.png; sourceTree = "<group>"; };
 		2D88405117BA1C57004A139C /* PMCCommonUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PMCCommonUtilities.framework; path = ../../libs/PMCCommonUtilities.framework; sourceTree = "<group>"; };
 		2D88405517BA1D37004A139C /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		2D996AD117BE161A00B38FD7 /* WBMonitorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBMonitorViewController.h; sourceTree = "<group>"; };
+		2D996AD217BE161A00B38FD7 /* WBMonitorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBMonitorViewController.m; sourceTree = "<group>"; };
+		2D996AD417BE20A700B38FD7 /* UITableViewCell+ExtraProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableViewCell+ExtraProperty.h"; sourceTree = "<group>"; };
+		2D996AD517BE20A700B38FD7 /* UITableViewCell+ExtraProperty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableViewCell+ExtraProperty.m"; sourceTree = "<group>"; };
 		2DCA529D17B8D2180007C612 /* PMC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PMC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DCA52A017B8D2180007C612 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		2DCA52A217B8D2180007C612 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -208,8 +213,6 @@
 		2DCA52BC17B8D2180007C612 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/WBViewController.xib; sourceTree = "<group>"; };
 		2DDA816017BC7A390003A2FE /* UISlider+ExtraProperty.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UISlider+ExtraProperty.h"; sourceTree = "<group>"; };
 		2DDA816117BC7A390003A2FE /* UISlider+ExtraProperty.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UISlider+ExtraProperty.m"; sourceTree = "<group>"; };
-		2DDA816817BCADC00003A2FE /* WBMonitorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBMonitorViewController.h; sourceTree = "<group>"; };
-		2DDA816917BCADC00003A2FE /* WBMonitorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBMonitorViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -379,6 +382,8 @@
 				2D88402C17B9EBAF004A139C /* WBSceneModelView.m */,
 				2DDA816017BC7A390003A2FE /* UISlider+ExtraProperty.h */,
 				2DDA816117BC7A390003A2FE /* UISlider+ExtraProperty.m */,
+				2D996AD417BE20A700B38FD7 /* UITableViewCell+ExtraProperty.h */,
+				2D996AD517BE20A700B38FD7 /* UITableViewCell+ExtraProperty.m */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -470,8 +475,8 @@
 				2D883F8517B9DB3C004A139C /* WBGeneralControlVC.xib */,
 				2D88404017BA0174004A139C /* WBSettingVC.h */,
 				2D88404117BA0174004A139C /* WBSettingVC.m */,
-				2DDA816817BCADC00003A2FE /* WBMonitorViewController.h */,
-				2DDA816917BCADC00003A2FE /* WBMonitorViewController.m */,
+				2D996AD117BE161A00B38FD7 /* WBMonitorViewController.h */,
+				2D996AD217BE161A00B38FD7 /* WBMonitorViewController.m */,
 			);
 			path = viewControllers;
 			sourceTree = "<group>";
@@ -610,7 +615,8 @@
 				2D88404217BA0174004A139C /* WBSettingVC.m in Sources */,
 				2D1B150317BB5CBA00EFF609 /* WBSceneConfigVC.m in Sources */,
 				2DDA816217BC7A390003A2FE /* UISlider+ExtraProperty.m in Sources */,
-				2DDA816A17BCADC10003A2FE /* WBMonitorViewController.m in Sources */,
+				2D996AD317BE161A00B38FD7 /* WBMonitorViewController.m in Sources */,
+				2D996AD617BE20A700B38FD7 /* UITableViewCell+ExtraProperty.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

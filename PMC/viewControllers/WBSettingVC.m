@@ -14,12 +14,17 @@
 
 @interface WBSettingVC () {
     BOOL isExpand;
-    UITableView *_tblView;
 }
 
 @end
 
 @implementation WBSettingVC
+
+- (void)dealloc {
+    self.tblView = nil;
+    self.scenes = nil;
+    [super dealloc];
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -45,7 +50,7 @@
     tbl.dataSource = self;
     [self.view addSubview:tbl];
     [tbl release];
-    _tblView = tbl;
+    self.tblView = tbl;
     
 }
 
@@ -119,12 +124,14 @@
         [iv release];
         
     }
-    cell.backgroundColor = [UIColor whiteColor];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//    cell.backgroundColor = [UIColor whiteColor];
     UIImageView *iv = ((UIImageView *)[cell.contentView.subviews lastObject]);
     UILabel *lbl = ((UILabel *)[cell.contentView.subviews objectAtIndex:cell.contentView.subviews.count-2]);
     iv.frame = CGRectMake(10, 10, 25, 25);
     lbl.frame = CGRectMake(50, 7, 200, 30);
     if (indexPath.row == 0) {
+        cell.accessoryType = UITableViewCellAccessoryNone;
         ((UIImageView *)[cell.contentView.subviews lastObject]).image = [UIImage imageNamed:@"configuration_icon"];
         ((UILabel *)[cell.contentView.subviews objectAtIndex:cell.contentView.subviews.count-2]).text = @"Configuration";
     } else if ((indexPath.row == 1 && isExpand == NO) || (indexPath.row == self.scenes.count+1 && isExpand == YES)) {
@@ -133,7 +140,7 @@
     } else {
         iv.frame = CGRectMake(40, 7, 25, 25);
         lbl.frame = CGRectMake(80, 4, 200, 30);
-        cell.backgroundColor = [UIColor colorWithRed:237.0/255.0 green:237.0/255.0 blue:237.0/255.0 alpha:1.0f];
+//        cell.backgroundColor = [UIColor colorWithRed:237.0/255.0 green:237.0/255.0 blue:237.0/255.0 alpha:1.0f];
         NSString *image_url = [NSString stringWithFormat:@"icon%d",indexPath.row];
         ((UIImageView *)[cell.contentView.subviews lastObject]).image = [UIImage imageNamed:image_url];
         NSString *scene_name = [[self.scenes objectAtIndex:indexPath.row - 1] objectAtIndex:0];
