@@ -10,6 +10,9 @@
 
 #import "UITableViewCell+ExtraProperty.h"
 
+const float selectedRowHeight   = 150.0;
+const float unselectedRowHeight = 1.0;
+
 @interface WBMonitorViewController ()
 
 @end
@@ -44,7 +47,7 @@
     self.rowHeightArray = [NSMutableArray array];
     for (int i = 0; i < self.lights.count; i ++) {
         [_rowHeightArray addObject:[NSNumber numberWithFloat:44.0f]];
-        [_rowHeightArray addObject:[NSNumber numberWithFloat:1.0f]];
+        [_rowHeightArray addObject:[NSNumber numberWithFloat:unselectedRowHeight]];
     }
 //    self.lights = [NSArray arrayWithObjects:@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1", nil];
     
@@ -109,18 +112,28 @@
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             cell.backgroundColor = [UIColor colorWithRed:237.0/255.0 green:237.0/255.0 blue:237.0/255.0 alpha:1.0f];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.clipsToBounds = YES;
             
-            UILabel *lblPower = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, cell.bounds.size.width, 30)];
+            UILabel *lblPower = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, cell.bounds.size.width, 30)];
             lblPower.backgroundColor = [UIColor clearColor];
             lblPower.text = @"Power:0.00(w)";
             lblPower.textAlignment = NSTextAlignmentCenter;
             [cell.contentView addSubview:lblPower];
+            [lblPower release];
+            
+            lblPower = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, cell.bounds.size.width, 30)];
+            lblPower.backgroundColor = [UIColor clearColor];
+            lblPower.text = @"Dimming:0.00(w)";
+            lblPower.textAlignment = NSTextAlignmentCenter;
+            [cell.contentView addSubview:lblPower];
+            [lblPower release];
             
         }
         
+        ((UILabel *)([cell.contentView.subviews lastObject])).text = [NSString stringWithFormat:@"Power:%f(w)",1.0f];
         
         
-        cell.textLabel.text = @"aaa";
+        
         
         return cell;
     }
@@ -174,10 +187,11 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.row%2==0) {
-        if ([[_rowHeightArray objectAtIndex:indexPath.row+1] floatValue] == 88.0) {
-            [self.rowHeightArray setObject:[NSNumber numberWithFloat:1.0] atIndexedSubscript:indexPath.row+1];
+        if ([[_rowHeightArray objectAtIndex:indexPath.row+1] floatValue] == selectedRowHeight
+            ) {
+            [self.rowHeightArray setObject:[NSNumber numberWithFloat:unselectedRowHeight] atIndexedSubscript:indexPath.row+1];
         } else {
-            [self.rowHeightArray setObject:[NSNumber numberWithFloat:88.0] atIndexedSubscript:indexPath.row+1];
+            [self.rowHeightArray setObject:[NSNumber numberWithFloat:selectedRowHeight] atIndexedSubscript:indexPath.row+1];
         }
         
         [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section]] withRowAnimation:UITableViewRowAnimationAutomatic];
