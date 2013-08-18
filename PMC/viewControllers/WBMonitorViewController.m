@@ -19,6 +19,7 @@
 - (void)dealloc {
     self.tblView = nil;
     self.lights = nil;
+    self.rowHeightArray = nil;
     [super dealloc];
 }
 
@@ -39,8 +40,13 @@
     self.view.backgroundColor = app_default_background_color;
     self.title = @"Monitor";
     
-//    self.lights = [[PMCTool sharedInstance] getLightsInOffice];
-    self.lights = [NSArray arrayWithObjects:@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1", nil];
+    self.lights = [[PMCTool sharedInstance] getLightsInOffice];
+    self.rowHeightArray = [NSMutableArray array];
+    for (int i = 0; i < self.lights.count; i ++) {
+        [_rowHeightArray addObject:[NSNumber numberWithFloat:44.0f]];
+        [_rowHeightArray addObject:[NSNumber numberWithFloat:1.0f]];
+    }
+//    self.lights = [NSArray arrayWithObjects:@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1", nil];
     
     UITableView *tbl = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
     tbl.backgroundColor = [UIColor clearColor];
@@ -68,8 +74,7 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    return 44.0f;
+    return [[self.rowHeightArray objectAtIndex:indexPath.row] floatValue];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -103,6 +108,14 @@
         if (cell==nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
             cell.backgroundColor = [UIColor colorWithRed:237.0/255.0 green:237.0/255.0 blue:237.0/255.0 alpha:1.0f];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            UILabel *lblPower = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, cell.bounds.size.width, 30)];
+            lblPower.backgroundColor = [UIColor clearColor];
+            lblPower.text = @"Power:0.00(w)";
+            lblPower.textAlignment = NSTextAlignmentCenter;
+            [cell.contentView addSubview:lblPower];
+            
         }
         
         
@@ -160,6 +173,15 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row%2==0) {
+        if ([[_rowHeightArray objectAtIndex:indexPath.row+1] floatValue] == 88.0) {
+            [self.rowHeightArray setObject:[NSNumber numberWithFloat:1.0] atIndexedSubscript:indexPath.row+1];
+        } else {
+            [self.rowHeightArray setObject:[NSNumber numberWithFloat:88.0] atIndexedSubscript:indexPath.row+1];
+        }
+        
+        [tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
 //    if (indexPath.section == 0 && indexPath.row == 0) {
 //        [tableView beginUpdates];
 //        NSMutableArray *preAdd = [NSMutableArray array];

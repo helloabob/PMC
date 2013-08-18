@@ -12,6 +12,8 @@
 
 @property(nonatomic, strong) NSArray *lights;
 
+@property (nonatomic, strong) NSMutableArray *rowHeightArray;
+
 @property (nonatomic, strong) UITableView *tblView;
 
 @end

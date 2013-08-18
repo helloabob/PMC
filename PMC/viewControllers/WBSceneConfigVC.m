@@ -184,7 +184,8 @@
     }
     ((UISlider *)[cell.contentView.subviews lastObject]).value = [[[_lights objectAtIndex:indexPath.row] objectAtIndex:1] intValue];
     ((UISlider *)[cell.contentView.subviews lastObject]).ip = [[_lights objectAtIndex:indexPath.row] objectAtIndex:0];
-    NSString *str = [NSString stringWithFormat:@"Light%@",[[_lights objectAtIndex:indexPath.row] objectAtIndex:2]];
+//    NSString *str = [NSString stringWithFormat:@"Light%@",[[_lights objectAtIndex:indexPath.row] objectAtIndex:2]];
+    NSString *str = [NSString stringWithFormat:@"Light%d",indexPath.row+1];
     ((UILabel *)[cell.contentView.subviews objectAtIndex:cell.contentView.subviews.count-2]).text = str;
     
     //    if (indexPath.section == 0) {
