@@ -12,4 +12,8 @@
 
 @property (nonatomic, strong) NSString *ip;
 
+@property (nonatomic, strong) UILabel *lblPower;
+@property (nonatomic, strong) UILabel *lblDimming;
+@property (nonatomic, strong) UILabel *lblRunning;
+
 @end

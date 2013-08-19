@@ -16,4 +16,6 @@
 
 @property (nonatomic, strong) UITableView *tblView;
 
+@property (nonatomic, strong)NSMutableDictionary *powerList;
+
 @end

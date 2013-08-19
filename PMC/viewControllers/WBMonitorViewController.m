@@ -10,6 +10,10 @@
 
 #import "UITableViewCell+ExtraProperty.h"
 
+#import "MBProgressHUD.h"
+
+#import "AFNetworking.h"
+
 const float selectedRowHeight   = 150.0;
 const float unselectedRowHeight = 1.0;
 
@@ -20,6 +24,7 @@ const float unselectedRowHeight = 1.0;
 @implementation WBMonitorViewController
 
 - (void)dealloc {
+    self.powerList = nil;
     self.tblView = nil;
     self.lights = nil;
     self.rowHeightArray = nil;
@@ -59,6 +64,33 @@ const float unselectedRowHeight = 1.0;
     [self.view addSubview:tbl];
     [tbl release];
     self.tblView = tbl;
+    
+    self.powerList = [NSMutableDictionary dictionary];
+    
+    MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+    hud.labelText = @"Loading";
+    hud.dimBackground = YES;
+    [self.navigationController.view addSubview:hud];
+    [hud show:YES];
+    
+    for (NSArray *row in _lights) {
+        
+        NSURL *url = [NSURL URLWithString:getLightsPowerForOffice([row objectAtIndex:0], [row objectAtIndex:1])];
+        //    NSURLRequest *request_ = [NSURLRequest requestWithURL:url];
+        NSURLRequest *request_ = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5.0f];
+        AFHTTPRequestOperation *operation = [[[AFHTTPRequestOperation alloc] initWithRequest:request_] autorelease];
+        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSString *str = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];
+            //        NSLog(@"%@",[str JSONValue]);
+            
+            [_powerList setObject:str forKey:[row objectAtIndex:0]];
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            [_powerList setObject:@"Not Found" forKey:[row objectAtIndex:0]];
+        }];
+        [operation start];
+    }
+    [hud hide:YES afterDelay:6.0f];
+    [tbl performSelector:@selector(reloadData) withObject:nil afterDelay:6.0f];
 }
 
 - (void)didReceiveMemoryWarning
@@ -114,23 +146,58 @@ const float unselectedRowHeight = 1.0;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.clipsToBounds = YES;
             
-            UILabel *lblPower = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, cell.bounds.size.width, 30)];
-            lblPower.backgroundColor = [UIColor clearColor];
-            lblPower.text = @"Power:0.00(w)";
-            lblPower.textAlignment = NSTextAlignmentCenter;
-            [cell.contentView addSubview:lblPower];
-            [lblPower release];
+            UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, cell.bounds.size.width/2-15, 30)];
+            lbl.backgroundColor = [UIColor clearColor];
+            lbl.text = @"Power:";
+            lbl.textAlignment = NSTextAlignmentRight;
+            [cell.contentView addSubview:lbl];
+            [lbl release];
             
-            lblPower = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, cell.bounds.size.width, 30)];
-            lblPower.backgroundColor = [UIColor clearColor];
-            lblPower.text = @"Dimming:0.00(w)";
-            lblPower.textAlignment = NSTextAlignmentCenter;
-            [cell.contentView addSubview:lblPower];
-            [lblPower release];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2+15, 20, cell.bounds.size.width/2-15, 30)];
+            lbl.backgroundColor = [UIColor clearColor];
+            lbl.text = @"0.00(w)";
+            lbl.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:lbl];
+            [lbl release];
+            cell.lblPower = lbl;
+            
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, cell.bounds.size.width/2-15, 30)];
+            lbl.backgroundColor = [UIColor clearColor];
+            lbl.text = @"Dimming Level:";
+            lbl.textAlignment = NSTextAlignmentRight;
+            [cell.contentView addSubview:lbl];
+            [lbl release];
+            
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2+15, 60, cell.bounds.size.width/2-15, 30)];
+            lbl.backgroundColor = [UIColor clearColor];
+            lbl.text = @"100%";
+            lbl.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:lbl];
+            [lbl release];
+            cell.lblDimming = lbl;
+            
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, cell.bounds.size.width/2-15, 30)];
+            lbl.backgroundColor = [UIColor clearColor];
+            lbl.text = @"Running Time:";
+            lbl.textAlignment = NSTextAlignmentRight;
+            [cell.contentView addSubview:lbl];
+            [lbl release];
+            
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2+15, 100, cell.bounds.size.width/2-15, 30)];
+            lbl.backgroundColor = [UIColor clearColor];
+            lbl.text = @"0H 0M";
+            lbl.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:lbl];
+            [lbl release];
+            cell.lblRunning = lbl;
             
         }
         
-        ((UILabel *)([cell.contentView.subviews lastObject])).text = [NSString stringWithFormat:@"Power:%f(w)",1.0f];
+        if ([_powerList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]]) {
+            cell.lblPower.text = [_powerList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]];
+        }
+        
+//        ((UILabel *)([cell.contentView.subviews lastObject])).text = [NSString stringWithFormat:@"Power:%f(w)",1.0f];
         
         
         

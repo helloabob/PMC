@@ -22,4 +22,28 @@
     return objc_getAssociatedObject(self, "ip_key");
 }
 
+- (void)setLblPower:(UILabel *)lblPower{
+    objc_setAssociatedObject(self, "power_key", lblPower, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UILabel *)lblPower {
+    return objc_getAssociatedObject(self, "power_key");
+}
+
+- (void)setLblDimming:(UILabel *)lblDimming {
+    objc_setAssociatedObject(self, "dim_key", lblDimming, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UILabel *)lblDimming {
+    return objc_getAssociatedObject(self, "dim_key");
+}
+
+- (void)setLblRunning:(UILabel *)lblRunning {
+    objc_setAssociatedObject(self, "run_key", lblRunning, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (UILabel *)lblRunning {
+    return objc_getAssociatedObject(self, "run_key");
+}
+
 @end

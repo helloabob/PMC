@@ -10,6 +10,8 @@
 
 #import "UISlider+ExtraProperty.h"
 
+#import "MBProgressHUD.h"
+
 @interface WBSceneConfigVC ()
 
 @end
@@ -111,6 +113,13 @@
 }
 
 - (void)save {
+    
+    MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+    hud.labelText = @"Saving";
+    [self.navigationController.view addSubview:hud];
+    [hud show:YES];
+    [hud hide:YES afterDelay:1.0f];
+    
     NSMutableArray *array = [NSMutableArray array];
     for (int i = 0; i < self.lights.count; i ++) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -124,7 +133,8 @@
         [[PMCTool sharedInstance] updateLightsForScene:_sceneId withData:array withSceneName:self.txtSceneName.text];
 //        [[PMCTool sharedInstance] updateLightsForScene:self.sceneName withData:array];
     }
-    [self.navigationController popViewControllerAnimated:YES];
+//    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController performSelector:@selector(popViewControllerAnimated:) withObject:[NSNumber numberWithBool:YES] afterDelay:1.0f];
 //    [self dismissModalViewControllerAnimated:YES];
 }
 

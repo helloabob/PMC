@@ -20,3 +20,7 @@
 #define app_default_background_color [UIColor colorWithRed:90.0/255.0 green:140.0/255.0 blue:181.0/255.0 alpha:1]
 
 #define maxDimmingLevel 220.0f
+
+#define getLightsForOffice(a) [NSString stringWithFormat:@"http://192.168.11.57:8080/server.php?m=getlights&id=%@",a]
+
+#define getLightsPowerForOffice(a,b) [NSString stringWithFormat:@"http://192.168.0.163/server.php?m=getpower&ip=%@&mac=%@",a,b]

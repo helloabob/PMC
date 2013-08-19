@@ -16,6 +16,12 @@
 
 #import "WBGeneralControlVC.h"
 
+#import "AFNetworking.h"
+
+#import "JSON.h"
+
+#import "MBProgressHUD.h"
+
 @interface IndexViewController () {
 //    NSString *scanResult;
 }
@@ -97,30 +103,95 @@
     return YES;
 }
 
-- (IBAction)btnEnterTapped:(id)sender {
-    BOOL canFind = NO;
-    for (NSArray *dict in self.arrayMenu) {
-        if ([[dict objectAtIndex:0] isEqualToString:self.txtRoom.text]) {
-            canFind = YES;
-            break;
+- (void)checkAndValidation:(NSString *)code {
+    [[PMCTool sharedInstance] setOfficeId:code];
+    MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+    hud.labelText = @"Loading";
+    hud.dimBackground = YES;
+    [self.navigationController.view addSubview:hud];
+    [hud show:YES];
+    NSURL *url = [NSURL URLWithString:getLightsForOffice(code)];
+//    NSURLRequest *request_ = [NSURLRequest requestWithURL:url];
+    NSURLRequest *request_ = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5.0f];
+    AFHTTPRequestOperation *operation = [[[AFHTTPRequestOperation alloc] initWithRequest:request_] autorelease];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSString *str = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];
+//        NSLog(@"%@",[str JSONValue]);
+        
+        NSArray *array = [str JSONValue];
+        
+        if (array==nil || array.count == 0) {
+            hud.labelText = @"Room number is wrong.";
+        
+            [hud hide:YES afterDelay:1.0f];
+            return ;
         }
-//        if ([[dict objectForKey:OfficeNameKey] isEqualToString:self.txtRoom.text]) {
+        
+        BOOL flag = [[PMCTool sharedInstance] replaceLightsInfo:array];
+        
+        if (flag == YES) {
+            [hud hide:YES];
+            [self gotoNextView];
+        } else {
+            hud.labelText = @"Error in loading";
+            [hud hide:YES afterDelay:1.0f];
+        }
+        
+//        WBGeneralControlVC *detailViewController = [[WBGeneralControlVC alloc] init];
+        ////        detailViewController.office_id = self.txtRoom.text;
+        ////        RootViewController *detailViewController = [[RootViewController alloc] init];
+//        [self.navigationController pushViewController:detailViewController animated:YES];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"error:%@",error);
+//        [[PMCTool sharedInstance] setOfficeId:code];
+        NSArray *array = [[PMCTool sharedInstance] getLightsInOffice];
+        if (array && array.count > 0) {
+            [hud hide:YES];
+            [self gotoNextView];
+        } else {
+            hud.labelText = @"Error in loading";
+            [hud hide:YES afterDelay:1.0f];
+        }
+    }];
+    [operation start];
+//    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request_ success:^(NSURLRequest *request,NSHTTPURLResponse *response,id JSON){
+//        NSLog(@"%@",JSON);
+//    }failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
+//        NSLog(@"error:%@",error);
+//    }];
+//    [operation start];
+}
+
+- (void)gotoNextView {
+    WBGeneralControlVC *detailViewController = [[[WBGeneralControlVC alloc] init] autorelease];
+    [self.navigationController pushViewController:detailViewController animated:YES];
+}
+
+- (IBAction)btnEnterTapped:(id)sender {
+    [self checkAndValidation:self.txtRoom.text];
+//    BOOL canFind = NO;
+//    for (NSArray *dict in self.arrayMenu) {
+//        if ([[dict objectAtIndex:0] isEqualToString:self.txtRoom.text]) {
 //            canFind = YES;
 //            break;
 //        }
-    }
-    if (canFind) {
-//        [Common setCurrentOfficeName:self.txtRoom.text];
-        [[PMCTool sharedInstance] setOfficeId:self.txtRoom.text];
-        WBGeneralControlVC *detailViewController = [[WBGeneralControlVC alloc] init];
-//        detailViewController.office_id = self.txtRoom.text;
-//        RootViewController *detailViewController = [[RootViewController alloc] init];
-        [self.navigationController pushViewController:detailViewController animated:YES];
-        [detailViewController release];
-    } else {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning" message:[NSString stringWithFormat:@"Room %@ is not exist!", self.txtRoom.text] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-    }
+////        if ([[dict objectForKey:OfficeNameKey] isEqualToString:self.txtRoom.text]) {
+////            canFind = YES;
+////            break;
+////        }
+//    }
+//    if (canFind) {
+////        [Common setCurrentOfficeName:self.txtRoom.text];
+//        [[PMCTool sharedInstance] setOfficeId:self.txtRoom.text];
+//        WBGeneralControlVC *detailViewController = [[WBGeneralControlVC alloc] init];
+////        detailViewController.office_id = self.txtRoom.text;
+////        RootViewController *detailViewController = [[RootViewController alloc] init];
+//        [self.navigationController pushViewController:detailViewController animated:YES];
+//        [detailViewController release];
+//    } else {
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning" message:[NSString stringWithFormat:@"Room %@ is not exist!", self.txtRoom.text] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//        [alert show];
+//    }
 }
 
 - (void)gotoScan {
@@ -205,28 +276,29 @@
 }
 
 - (void)checkScan {
-    BOOL canFind = NO;
-    for (NSArray *dict in self.arrayMenu) {
-        if ([[dict objectAtIndex:0] isEqualToString:self.scanResult]) {
-            canFind = YES;
-            break;
-        }
-//        if ([[dict objectForKey:OfficeNameKey] isEqualToString:self.scanResult]) {
+    [self checkAndValidation:self.scanResult];
+//    BOOL canFind = NO;
+//    for (NSArray *dict in self.arrayMenu) {
+//        if ([[dict objectAtIndex:0] isEqualToString:self.scanResult]) {
 //            canFind = YES;
 //            break;
 //        }
-    }
-    if (canFind) {
-//        [Common setCurrentOfficeName:self.scanResult];
-        [[PMCTool sharedInstance] setOfficeId:self.scanResult];
-        WBGeneralControlVC *detailViewController = [[WBGeneralControlVC alloc] init];
-//        RootViewController *detailViewController = [[RootViewController alloc] init];
-        [self.navigationController pushViewController:detailViewController animated:YES];
-        [detailViewController release];
-    } else {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning" message:[NSString stringWithFormat:@"Barcode may be wrong!result:%@",self.scanResult] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-    }
+////        if ([[dict objectForKey:OfficeNameKey] isEqualToString:self.scanResult]) {
+////            canFind = YES;
+////            break;
+////        }
+//    }
+//    if (canFind) {
+////        [Common setCurrentOfficeName:self.scanResult];
+//        [[PMCTool sharedInstance] setOfficeId:self.scanResult];
+//        WBGeneralControlVC *detailViewController = [[WBGeneralControlVC alloc] init];
+////        RootViewController *detailViewController = [[RootViewController alloc] init];
+//        [self.navigationController pushViewController:detailViewController animated:YES];
+//        [detailViewController release];
+//    } else {
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Warning" message:[NSString stringWithFormat:@"Barcode may be wrong!result:%@",self.scanResult] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+//        [alert show];
+//    }
 }
 
 - (void)didReceiveMemoryWarning
