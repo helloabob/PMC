@@ -112,7 +112,7 @@
     [hud show:YES];
     NSURL *url = [NSURL URLWithString:getLightsForOffice(code)];
 //    NSURLRequest *request_ = [NSURLRequest requestWithURL:url];
-    NSURLRequest *request_ = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5.0f];
+    NSURLRequest *request_ = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:2.0f];
     AFHTTPRequestOperation *operation = [[[AFHTTPRequestOperation alloc] initWithRequest:request_] autorelease];
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSString *str = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];

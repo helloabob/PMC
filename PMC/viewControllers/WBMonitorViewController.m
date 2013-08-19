@@ -64,8 +64,10 @@ const float unselectedRowHeight = 1.0;
     [self.view addSubview:tbl];
     [tbl release];
     self.tblView = tbl;
-    
+
     self.powerList = [NSMutableDictionary dictionary];
+    self.runningList = [NSMutableDictionary dictionary];
+    self.dimmingList = [NSMutableDictionary dictionary];
     
     MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
     hud.labelText = @"Loading";
@@ -74,23 +76,38 @@ const float unselectedRowHeight = 1.0;
     [hud show:YES];
     
     for (NSArray *row in _lights) {
-        
         NSURL *url = [NSURL URLWithString:getLightsPowerForOffice([row objectAtIndex:0], [row objectAtIndex:1])];
         //    NSURLRequest *request_ = [NSURLRequest requestWithURL:url];
         NSURLRequest *request_ = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5.0f];
         AFHTTPRequestOperation *operation = [[[AFHTTPRequestOperation alloc] initWithRequest:request_] autorelease];
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
             NSString *str = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];
-            //        NSLog(@"%@",[str JSONValue]);
-            
             [_powerList setObject:str forKey:[row objectAtIndex:0]];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             [_powerList setObject:@"Not Found" forKey:[row objectAtIndex:0]];
         }];
         [operation start];
+        [NSThread detachNewThreadSelector:@selector(running_thread_job:) toTarget:self withObject:[row objectAtIndex:0]];
     }
+    
     [hud hide:YES afterDelay:6.0f];
     [tbl performSelector:@selector(reloadData) withObject:nil afterDelay:6.0f];
+}
+
+- (void)running_thread_job:(NSString *)key {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSDictionary *dict = [[PMCTool sharedInstance] getLightStatusWithIP:key];
+    if (dict) {
+        NSString *str = [NSString stringWithFormat:@"%dH %dM", [[dict objectForKey:@"h"] intValue], [[dict objectForKey:@"m"] intValue]];
+        [self.runningList setObject:str forKey:key];
+        double dimming = [[dict objectForKey:@"b"] doubleValue];
+        NSString *strDimming = [NSString stringWithFormat:@"%.f%%",dimming/maxDimmingLevel];
+        [self.dimmingList setObject:strDimming forKey:key];
+    } else {
+        [self.runningList setObject:@"Not Found" forKey:key];
+        [self.dimmingList setObject:@"Not Found" forKey:key];
+    }
+    [pool drain];
 }
 
 - (void)didReceiveMemoryWarning
@@ -153,7 +170,7 @@ const float unselectedRowHeight = 1.0;
             [cell.contentView addSubview:lbl];
             [lbl release];
             
-            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2+15, 20, cell.bounds.size.width/2-15, 30)];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 20, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
             lbl.text = @"0.00(w)";
             lbl.textAlignment = NSTextAlignmentLeft;
@@ -168,7 +185,7 @@ const float unselectedRowHeight = 1.0;
             [cell.contentView addSubview:lbl];
             [lbl release];
             
-            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2+15, 60, cell.bounds.size.width/2-15, 30)];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 60, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
             lbl.text = @"100%";
             lbl.textAlignment = NSTextAlignmentLeft;
@@ -183,7 +200,7 @@ const float unselectedRowHeight = 1.0;
             [cell.contentView addSubview:lbl];
             [lbl release];
             
-            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2+15, 100, cell.bounds.size.width/2-15, 30)];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 100, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
             lbl.text = @"0H 0M";
             lbl.textAlignment = NSTextAlignmentLeft;
@@ -195,6 +212,12 @@ const float unselectedRowHeight = 1.0;
         
         if ([_powerList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]]) {
             cell.lblPower.text = [_powerList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]];
+        }
+        if ([_runningList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]]) {
+            cell.lblRunning.text = [_runningList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]];
+        }
+        if ([_dimmingList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]]) {
+            cell.lblDimming.text = [_dimmingList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]];
         }
         
 //        ((UILabel *)([cell.contentView.subviews lastObject])).text = [NSString stringWithFormat:@"Power:%f(w)",1.0f];

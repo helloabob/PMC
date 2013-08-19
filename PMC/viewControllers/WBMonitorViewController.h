@@ -10,12 +10,16 @@
 
 @interface WBMonitorViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
 
-@property(nonatomic, strong) NSArray *lights;
+@property (nonatomic, strong) NSArray *lights;
 
 @property (nonatomic, strong) NSMutableArray *rowHeightArray;
 
 @property (nonatomic, strong) UITableView *tblView;
 
-@property (nonatomic, strong)NSMutableDictionary *powerList;
+@property (nonatomic, strong) NSMutableDictionary *powerList;
+
+@property (nonatomic, strong) NSMutableDictionary *runningList;
+
+@property (nonatomic, strong) NSMutableDictionary *dimmingList;
 
 @end
