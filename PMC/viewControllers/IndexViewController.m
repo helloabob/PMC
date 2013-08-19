@@ -120,7 +120,7 @@
         
         NSArray *array = [str JSONValue];
         
-        if (array==nil || array.count == 0) {
+        if (array == nil || array.count == 0) {
             hud.labelText = @"Room number is wrong.";
         
             [hud hide:YES afterDelay:1.0f];
@@ -168,6 +168,69 @@
 }
 
 - (IBAction)btnEnterTapped:(id)sender {
+//    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"abc",@"1",@"bcd",@"2", nil];
+//    NSString *str = [dict JSONFragment];
+//    NSLog(@"%@",str);
+//    
+//    NSString *pathStr=@"http://192.168.0.12/upload.php" ;
+//    
+//    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@""]];//这里要将url设置为空
+//    
+//    httpClient.parameterEncoding = AFJSONParameterEncoding;
+//    
+//    [httpClient setDefaultHeader:@"Accept" value:@"text/json"];
+//    
+//    
+//    NSMutableDictionary *params=[[NSMutableDictionary alloc] init];   // 要传递的json数据是一个字典
+//    
+//    [params setObject:@"aaa" forKey:@"userId"];
+//    
+////    [params setObject:[self.contDic objectForKey:@"weiboId" ] forKey:@"operateId"];
+//    
+//    [params setObject:@"8d0ce196d0eafa27780cc3a7217de71d92474021dc0a4fc593d4f9b9eda320ca" forKey:@"key"];
+//    // httpClient 的postPath就是上文中的pathStr，即你要访问的URL地址，这里是向服务器提交一个数据请求，
+//    
+//    [httpClient postPath:pathStr parameters:params success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//        
+//        NSLog(@"data====%@",params);
+//        
+//        NSString *responseStr = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+//        
+//        NSLog(@"Request Successful, response '%@'", responseStr);
+//        
+//        [responseStr release];
+//        
+//    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//        
+//        NSLog(@"[HTTPClient Error]: %@", error);
+//    }];
+    
+//    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://192.168.0.12/upload.php?t=%@",str]];
+//    NSURLRequest *request = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:2.0f];
+//    AFHTTPRequestOperation *op = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+//    [op setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+//        NSLog(@"%@",responseObject);
+//    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//        NSLog(@"error%@",error);
+//    }];
+//    [op start];
+    
+//    NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+//    NSURL *url = [NSURL URLWithString:@"http://192.168.0.12"];
+//    AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
+//    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:[NSString stringWithFormat:@"/upload.php?t=%@", str] parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+//        [formData appendPartWithFileData:data name:@"aaa" fileName:@"aaa.json" mimeType:@"text/json"];
+//    }];
+//    [request setTimeoutInterval:2.0f];
+//    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+//    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+//        NSString *aa = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];
+//        NSLog(@"result:%@",aa);
+//    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//        NSLog(@"error:%@",error);
+//    }];
+//    [operation start];
+    
     [self checkAndValidation:self.txtRoom.text];
 //    BOOL canFind = NO;
 //    for (NSArray *dict in self.arrayMenu) {
