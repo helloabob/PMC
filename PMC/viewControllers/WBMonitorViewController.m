@@ -14,16 +14,23 @@
 
 #import "AFNetworking.h"
 
-const float selectedRowHeight   = 150.0;
+#import "WBAppDelegate.h"
+
+const float selectedRowHeight   = 120.0;
 const float unselectedRowHeight = 1.0;
 
 @interface WBMonitorViewController ()
 
 @end
+//No2_2F23#$$User_1
+//No2_2F23#$$User_2
 
 @implementation WBMonitorViewController
 
 - (void)dealloc {
+    NSLog(@"monitor_dealloc");
+    self.runningList = nil;
+    self.dimmingList = nil;
     self.powerList = nil;
     self.tblView = nil;
     self.lights = nil;
@@ -52,7 +59,7 @@ const float unselectedRowHeight = 1.0;
     self.rowHeightArray = [NSMutableArray array];
     for (int i = 0; i < self.lights.count; i ++) {
         [_rowHeightArray addObject:[NSNumber numberWithFloat:44.0f]];
-        [_rowHeightArray addObject:[NSNumber numberWithFloat:unselectedRowHeight]];
+        [_rowHeightArray addObject:[NSNumber numberWithFloat:selectedRowHeight]];
     }
 //    self.lights = [NSArray arrayWithObjects:@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1",@"1", nil];
     
@@ -69,20 +76,28 @@ const float unselectedRowHeight = 1.0;
     self.runningList = [NSMutableDictionary dictionary];
     self.dimmingList = [NSMutableDictionary dictionary];
     
-    MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+    hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
     hud.labelText = @"Loading";
     hud.dimBackground = YES;
     [self.navigationController.view addSubview:hud];
     [hud show:YES];
     
+    canDo = YES;
+    
     for (NSArray *row in _lights) {
-        NSURL *url = [NSURL URLWithString:getLightsPowerForOffice([row objectAtIndex:0], [row objectAtIndex:1])];
+        NSString  *url_path = getLightsPowerForOffice([row objectAtIndex:0], [row objectAtIndex:1]);
+        NSLog(@"path:%@",url_path);
+        NSURL *url = [NSURL URLWithString:url_path];
         //    NSURLRequest *request_ = [NSURLRequest requestWithURL:url];
         NSURLRequest *request_ = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:5.0f];
         AFHTTPRequestOperation *operation = [[[AFHTTPRequestOperation alloc] initWithRequest:request_] autorelease];
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
             NSString *str = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];
-            [_powerList setObject:str forKey:[row objectAtIndex:0]];
+            if ([str rangeOfString:@"success:"].length > 0) {
+                [_powerList setObject:[str substringFromIndex:[str rangeOfString:@"success:"].length] forKey:[row objectAtIndex:0]];
+            } else {
+                [_powerList setObject:@"Not Found" forKey:[row objectAtIndex:0]];
+            }
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             [_powerList setObject:@"Not Found" forKey:[row objectAtIndex:0]];
         }];
@@ -90,8 +105,21 @@ const float unselectedRowHeight = 1.0;
         [NSThread detachNewThreadSelector:@selector(running_thread_job:) toTarget:self withObject:[row objectAtIndex:0]];
     }
     
-    [hud hide:YES afterDelay:6.0f];
-    [tbl performSelector:@selector(reloadData) withObject:nil afterDelay:6.0f];
+    [self performSelector:@selector(doAsync) withObject:nil afterDelay:6.0f];
+}
+
+- (void)doAsync {
+    if (canDo == NO) {
+        return;
+    }
+    [hud hide:YES];
+    [self.tblView performSelector:@selector(reloadData) withObject:nil afterDelay:6.0f];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    canDo = NO;
+    [hud hide:YES];
+    [super viewWillDisappear:animated];
 }
 
 - (void)running_thread_job:(NSString *)key {
@@ -101,7 +129,7 @@ const float unselectedRowHeight = 1.0;
         NSString *str = [NSString stringWithFormat:@"%dH %dM", [[dict objectForKey:@"h"] intValue], [[dict objectForKey:@"m"] intValue]];
         [self.runningList setObject:str forKey:key];
         double dimming = [[dict objectForKey:@"b"] doubleValue];
-        NSString *strDimming = [NSString stringWithFormat:@"%.f%%",dimming/maxDimmingLevel];
+        NSString *strDimming = [NSString stringWithFormat:@"%.f%%",dimming/maxDimmingLevel*100.0];
         [self.dimmingList setObject:strDimming forKey:key];
     } else {
         [self.runningList setObject:@"Not Found" forKey:key];
@@ -163,46 +191,46 @@ const float unselectedRowHeight = 1.0;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.clipsToBounds = YES;
             
-            UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 20, cell.bounds.size.width/2-15, 30)];
+            UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 10, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
             lbl.text = @"Power:";
             lbl.textAlignment = NSTextAlignmentRight;
             [cell.contentView addSubview:lbl];
             [lbl release];
             
-            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 20, cell.bounds.size.width/2-15, 30)];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 10, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
-            lbl.text = @"0.00(w)";
+            lbl.text = @"Loading";
             lbl.textAlignment = NSTextAlignmentLeft;
             [cell.contentView addSubview:lbl];
             [lbl release];
             cell.lblPower = lbl;
             
-            lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 60, cell.bounds.size.width/2-15, 30)];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 40, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
             lbl.text = @"Dimming Level:";
             lbl.textAlignment = NSTextAlignmentRight;
             [cell.contentView addSubview:lbl];
             [lbl release];
             
-            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 60, cell.bounds.size.width/2-15, 30)];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 40, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
-            lbl.text = @"100%";
+            lbl.text = @"Loading";
             lbl.textAlignment = NSTextAlignmentLeft;
             [cell.contentView addSubview:lbl];
             [lbl release];
             cell.lblDimming = lbl;
             
-            lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 100, cell.bounds.size.width/2-15, 30)];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 70, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
             lbl.text = @"Running Time:";
             lbl.textAlignment = NSTextAlignmentRight;
             [cell.contentView addSubview:lbl];
             [lbl release];
             
-            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 100, cell.bounds.size.width/2-15, 30)];
+            lbl = [[UILabel alloc] initWithFrame:CGRectMake(cell.bounds.size.width/2, 70, cell.bounds.size.width/2-15, 30)];
             lbl.backgroundColor = [UIColor clearColor];
-            lbl.text = @"0H 0M";
+            lbl.text = @"Loading";
             lbl.textAlignment = NSTextAlignmentLeft;
             [cell.contentView addSubview:lbl];
             [lbl release];

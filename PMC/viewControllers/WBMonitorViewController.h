@@ -8,7 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface WBMonitorViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
+#import "MBProgressHUD.h"
+
+@interface WBMonitorViewController : UIViewController<UITableViewDataSource,UITableViewDelegate> {
+    MBProgressHUD *hud;
+    BOOL canDo;
+}
 
 @property (nonatomic, strong) NSArray *lights;
 

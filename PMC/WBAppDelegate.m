@@ -37,7 +37,7 @@
 //    [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
     [[DBHelper sharedInstance] setDBPath:path];
     DBProcessTask *task = [[DBProcessTask alloc] init];
-    task.sql = @"CREATE TABLE IF NOT EXISTS light_mstr(light_id INTEGER PRIMARY KEY, light_office_id TEXT, light_group_id INTEGER, light_mac TEXT, light_ip TEXT); CREATE TABLE IF NOT EXISTS office_mstr(office_id TEXT PRIMARY KEY , office_desc TEXT, office_image_url TEXT);  CREATE TABLE IF NOT EXISTS scene_mstr(scene_id INTEGER PRIMARY KEY AUTOINCREMENT, scene_name TEXT); CREATE TABLE IF NOT EXISTS scene_det(scene_det_id INTEGER, scene_resource_id INTEGER, scene_bright INTEGER);";
+    task.sql = @"CREATE TABLE IF NOT EXISTS light_mstr(light_id INTEGER PRIMARY KEY, light_office_id TEXT, light_user_i, light_group_id INTEGER, light_mac TEXT, light_ip TEXT); CREATE TABLE IF NOT EXISTS office_mstr(office_id TEXT PRIMARY KEY , office_desc TEXT, office_image_url TEXT);  CREATE TABLE IF NOT EXISTS scene_mstr(scene_id INTEGER PRIMARY KEY AUTOINCREMENT, scene_name TEXT); CREATE TABLE IF NOT EXISTS scene_det(scene_det_id INTEGER, scene_resource_id INTEGER, scene_bright INTEGER);";
 //    task.notificationName = @"createDB";
     task.taskType = TaskCreateTable;
     [[DBHelper sharedInstance] doTask:task];

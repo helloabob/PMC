@@ -93,7 +93,7 @@
     self.lights = [[PMCTool sharedInstance] getLightsForScene:_sceneId];
     self.tbl.delegate = self;
     self.tbl.dataSource = self;
-    self.tbl.scrollEnabled = NO;
+//    self.tbl.scrollEnabled = NO;
     
     self.txtSceneName.text = [[_lights objectAtIndex:0] objectAtIndex:3];
     self.txtSceneName.delegate = self;
@@ -176,7 +176,7 @@
 //        cell.textLabel.backgroundColor = [UIColor clearColor];
 //        cell.textLabel.frame = CGRectMake(40, cell.textLabel.frame.origin.y, cell.textLabel.frame.size.width, cell.textLabel.frame.size.height);
         
-        UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(20, 7, 60, 30)];
+        UILabel *lbl = [[UILabel alloc] initWithFrame:CGRectMake(10, 7, 70, 30)];
         lbl.backgroundColor = [UIColor clearColor];
         lbl.font = [UIFont boldSystemFontOfSize:18.0f];
 //        lbl.backgroundColor = [UIColor grayColor];
@@ -186,7 +186,7 @@
         UISlider *iv = [[UISlider alloc] init];
         iv.minimumValue = 1;
         iv.maximumValue = maxDimmingLevel;
-        iv.frame = CGRectMake(80, 10, 200, 25);
+        iv.frame = CGRectMake(90, 10, 200, 25);
         [iv addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
         [cell.contentView addSubview:iv];
         [iv release];

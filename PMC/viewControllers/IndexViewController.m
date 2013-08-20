@@ -104,62 +104,86 @@
 }
 
 - (void)checkAndValidation:(NSString *)code {
-    [[PMCTool sharedInstance] setOfficeId:code];
+    code = [code stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSArray *array = [code componentsSeparatedByString:@"$$"];
+    if (array.count < 2) {
+        return;
+    }
+    NSString *officeId = [array objectAtIndex:0];
+    NSString *userId = [array objectAtIndex:1] ;
+    
+    [[PMCTool sharedInstance] setOfficeId:officeId];
     MBProgressHUD *hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
     hud.labelText = @"Loading";
     hud.dimBackground = YES;
     [self.navigationController.view addSubview:hud];
     [hud show:YES];
-    NSURL *url = [NSURL URLWithString:getLightsForOffice(code)];
+    NSURL *url = [NSURL URLWithString:getLightsForOffice(officeId,userId)];
 //    NSURLRequest *request_ = [NSURLRequest requestWithURL:url];
     NSURLRequest *request_ = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:2.0f];
     AFHTTPRequestOperation *operation = [[[AFHTTPRequestOperation alloc] initWithRequest:request_] autorelease];
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSString *str = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];
-//        NSLog(@"%@",[str JSONValue]);
-        
         NSArray *array = [str JSONValue];
-        
         if (array == nil || array.count == 0) {
-            hud.labelText = @"Room number is wrong.";
-        
-            [hud hide:YES afterDelay:1.0f];
+            [self processResult:NO withHUD:hud withErrorString:@"Room number is invalid" withLightArray:nil withUserId:nil withOfficeId:nil];
             return ;
         }
-        
         BOOL flag = [[PMCTool sharedInstance] replaceLightsInfo:array];
-        
         if (flag == YES) {
-            [hud hide:YES];
-            [self gotoNextView];
+            [self processResult:YES withHUD:hud withErrorString:nil withLightArray:array withUserId:userId withOfficeId:officeId];
         } else {
-            hud.labelText = @"Error in loading";
-            [hud hide:YES afterDelay:1.0f];
+            [self processResult:NO withHUD:hud withErrorString:@"Room number is invalid" withLightArray:nil withUserId:nil withOfficeId:nil];
         }
-        
-//        WBGeneralControlVC *detailViewController = [[WBGeneralControlVC alloc] init];
-        ////        detailViewController.office_id = self.txtRoom.text;
-        ////        RootViewController *detailViewController = [[RootViewController alloc] init];
-//        [self.navigationController pushViewController:detailViewController animated:YES];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"error:%@",error);
-//        [[PMCTool sharedInstance] setOfficeId:code];
         NSArray *array = [[PMCTool sharedInstance] getLightsInOffice];
         if (array && array.count > 0) {
-            [hud hide:YES];
-            [self gotoNextView];
+//            [self processResult:YES withHUD:hud withErrorString:nil withLightArray:array withUserId:nil withOfficeId:nil];
+            [self processResult:NO withHUD:hud withErrorString:@"Room number is invalid" withLightArray:nil withUserId:nil withOfficeId:nil];
         } else {
-            hud.labelText = @"Error in loading";
-            [hud hide:YES afterDelay:1.0f];
+            [self processResult:NO withHUD:hud withErrorString:@"Room number is invalid" withLightArray:nil withUserId:nil withOfficeId:nil];
         }
     }];
     [operation start];
-//    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request_ success:^(NSURLRequest *request,NSHTTPURLResponse *response,id JSON){
-//        NSLog(@"%@",JSON);
-//    }failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON){
-//        NSLog(@"error:%@",error);
-//    }];
-//    [operation start];
+}
+
+- (void)processResult:(BOOL)isOK withHUD:(MBProgressHUD *)hud withErrorString:(NSString *)errorString withLightArray:(NSArray *)lightArray withUserId:(NSString *)userId withOfficeId:(NSString *)officeId {
+    if (isOK) {
+        int scene_count = [[PMCTool sharedInstance] getSceneCountInOffice];
+        if (scene_count != lightArray.count * 4) {
+            //need update
+            NSURL *url = [NSURL URLWithString:getScenesForOffice(officeId, userId)];
+            NSURLRequest *request_ = [NSURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:2.0f];
+            AFHTTPRequestOperation *operation = [[[AFHTTPRequestOperation alloc] initWithRequest:request_] autorelease];
+            [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+                NSString *str = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];
+                NSArray *array = [str JSONValue];
+                if (array == nil || array.count == 0) {
+                    hud.labelText = @"Room number is invalid";
+                    [hud hide:YES afterDelay:1.0f];
+                    return ;
+                }
+                BOOL fg = [[PMCTool sharedInstance] registerScenesWithServerData:array];
+                if (fg == NO) {
+                    hud.labelText = @"Room number is invalid";
+                    [hud hide:YES afterDelay:1.0f];
+                } else {
+                    [hud hide:YES];
+                    [self gotoNextView];
+                }
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                hud.labelText = @"Room number is invalid";
+                [hud hide:YES afterDelay:1.0f];
+            }];
+            [operation start];
+        } else {
+            [hud hide:YES];
+            [self gotoNextView];
+        }
+    } else {
+        hud.labelText = errorString;
+        [hud hide:YES afterDelay:1.0f];
+    }
 }
 
 - (void)gotoNextView {
@@ -171,7 +195,7 @@
 //    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:@"abc",@"1",@"bcd",@"2", nil];
 //    NSString *str = [dict JSONFragment];
 //    NSLog(@"%@",str);
-//    
+//
 //    NSString *pathStr=@"http://192.168.0.12/upload.php" ;
 //    
 //    AFHTTPClient *httpClient = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:@""]];//这里要将url设置为空
@@ -216,10 +240,11 @@
 //    [op start];
     
 //    NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-//    NSURL *url = [NSURL URLWithString:@"http://192.168.0.12"];
+//    NSURL *url = [NSURL URLWithString:@"http://192.168.11.57:8080/server.php?m=update&id=scene"];
 //    AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
 //    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:[NSString stringWithFormat:@"/upload.php?t=%@", str] parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-//        [formData appendPartWithFileData:data name:@"aaa" fileName:@"aaa.json" mimeType:@"text/json"];
+////        [formData appendPartWithFileData:data name:@"aaa" fileName:@"aaa.json" mimeType:@"text/json"];
+//        [formData appendString:str];
 //    }];
 //    [request setTimeoutInterval:2.0f];
 //    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];

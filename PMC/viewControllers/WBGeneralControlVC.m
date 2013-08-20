@@ -98,6 +98,10 @@
 //        } else {
 //            NSLog(@"turn on");
             [[PMCTool sharedInstance] switchAllLight:YES];
+        WBSceneModelView *turnOff = (WBSceneModelView *)[self.view viewWithTag:1000];
+        if (turnOff.isSelected == YES) {
+            turnOff.isSelected = NO;
+        }
 //        }
     } else {
 //        NSLog(@"change scene:%@",title);

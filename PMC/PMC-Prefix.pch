@@ -21,6 +21,8 @@
 
 #define maxDimmingLevel 220.0f
 
-#define getLightsForOffice(a) [NSString stringWithFormat:@"http://192.168.11.57:8080/server.php?m=getlights&id=%@",a]
+#define getLightsForOffice(a,b) [NSString stringWithFormat:@"http://192.168.11.11:8080/server.php?m=getlights&id=%@&uid=%@",a,b]
 
-#define getLightsPowerForOffice(a,b) [NSString stringWithFormat:@"http://192.168.0.163/server.php?m=getpower&ip=%@&mac=%@",a,b]
+#define getScenesForOffice(a,b) [NSString stringWithFormat:@"http://192.168.11.11:8080/server.php?m=getscenes&id=%@&uid=%@",a,b]
+
+#define getLightsPowerForOffice(a,b) [NSString stringWithFormat:@"http://192.168.11.11:8080/control.php?m=get&ip=%@&mac=%@",a,b]
