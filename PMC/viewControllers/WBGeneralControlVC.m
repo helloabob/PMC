@@ -12,7 +12,9 @@
 
 #import "WBSettingVC.h"
 
-@interface WBGeneralControlVC ()
+@interface WBGeneralControlVC () {
+    NSInteger lastSceneTag;
+}
 
 @end
 
@@ -102,13 +104,22 @@
         if (turnOff.isSelected == YES) {
             turnOff.isSelected = NO;
         }
+        for (UIView *child in self.view.subviews) {
+            if (child.tag == lastSceneTag && [child isMemberOfClass:[WBSceneModelView class]]) {
+                WBSceneModelView *wmv = (WBSceneModelView *)child;
+                if (wmv.isSelected == NO) {
+                    wmv.isSelected = YES;
+                }
+            }
+        }
 //        }
     } else {
-//        NSLog(@"change scene:%@",title);
         if (sceneModelView.tag == 1000) {
             [[PMCTool sharedInstance] switchAllLight:NO];
         } else {
+            [[PMCTool sharedInstance] switchAllLight:YES];
             [[PMCTool sharedInstance] changeToScene:sceneModelView.tag];
+            lastSceneTag = sceneModelView.tag;
         }
     }
 }
