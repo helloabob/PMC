@@ -117,8 +117,8 @@
         if (sceneModelView.tag == 1000) {
             [[PMCTool sharedInstance] switchAllLight:NO];
         } else {
-            [[PMCTool sharedInstance] switchAllLight:YES];
             [[PMCTool sharedInstance] changeToScene:sceneModelView.tag];
+            [[PMCTool sharedInstance] switchAllLight:YES];
             lastSceneTag = sceneModelView.tag;
         }
     }
