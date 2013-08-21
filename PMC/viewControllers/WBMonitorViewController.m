@@ -52,6 +52,8 @@ const float unselectedRowHeight = 1.0;
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
     
+    NSLog(@"monitor_viewDidLoad");
+    
     self.view.backgroundColor = app_default_background_color;
     self.title = @"Monitor";
     
@@ -76,11 +78,11 @@ const float unselectedRowHeight = 1.0;
     self.runningList = [NSMutableDictionary dictionary];
     self.dimmingList = [NSMutableDictionary dictionary];
     
-    hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
-    hud.labelText = @"Loading";
-    hud.dimBackground = YES;
-    [self.navigationController.view addSubview:hud];
-    [hud show:YES];
+//    hud = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+//    hud.labelText = @"Loading";
+//    hud.dimBackground = YES;
+//    [self.navigationController.view addSubview:hud];
+//    [hud show:YES];
     
     canDo = YES;
     
@@ -95,6 +97,7 @@ const float unselectedRowHeight = 1.0;
             NSString *str = [[[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding] autorelease];
             if ([str rangeOfString:@"success:"].length > 0) {
                 [_powerList setObject:[str substringFromIndex:[str rangeOfString:@"success:"].length] forKey:[row objectAtIndex:0]];
+                [self performSelectorOnMainThread:@selector(doAsync) withObject:nil waitUntilDone:YES];
             } else {
                 [_powerList setObject:@"Not Found" forKey:[row objectAtIndex:0]];
             }
@@ -108,12 +111,18 @@ const float unselectedRowHeight = 1.0;
     [self performSelector:@selector(doAsync) withObject:nil afterDelay:6.0f];
 }
 
+- (void)doQueryPower:(NSArray *)array {
+    
+}
+
 - (void)doAsync {
     if (canDo == NO) {
         return;
     }
-    [hud hide:YES];
-    [self.tblView performSelector:@selector(reloadData) withObject:nil afterDelay:6.0f];
+    NSLog(@"power_count:%@",self.powerList);
+    NSLog(@"light_count:%@",self.runningList);
+//    [hud hide:YES];
+    [self.tblView reloadData];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -124,17 +133,24 @@ const float unselectedRowHeight = 1.0;
 
 - (void)running_thread_job:(NSString *)key {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    NSDictionary *dict = [[PMCTool sharedInstance] getLightStatusWithIP:key];
-    if (dict) {
-        NSString *str = [NSString stringWithFormat:@"%dH %dM", [[dict objectForKey:@"h"] intValue], [[dict objectForKey:@"m"] intValue]];
-        [self.runningList setObject:str forKey:key];
-        double dimming = [[dict objectForKey:@"b"] doubleValue];
-        NSString *strDimming = [NSString stringWithFormat:@"%.f%%",dimming/maxDimmingLevel*100.0];
-        [self.dimmingList setObject:strDimming forKey:key];
-    } else {
-        [self.runningList setObject:@"Not Found" forKey:key];
-        [self.dimmingList setObject:@"Not Found" forKey:key];
+    int i = 0;
+    while (i < 3) {
+        NSDictionary *dict = [[PMCTool sharedInstance] getLightStatusWithIP:key];
+        if (dict) {
+            NSString *str = [NSString stringWithFormat:@"%dH %dM", [[dict objectForKey:@"h"] intValue], [[dict objectForKey:@"m"] intValue]];
+            [self.runningList setObject:str forKey:key];
+            double dimming = [[dict objectForKey:@"b"] doubleValue];
+            NSString *strDimming = [NSString stringWithFormat:@"%.f%%",dimming/maxDimmingLevel*100.0];
+            [self.dimmingList setObject:strDimming forKey:key];
+            [self performSelectorOnMainThread:@selector(doAsync) withObject:nil waitUntilDone:YES];
+            break;
+        } else {
+            [self.runningList setObject:@"Not Found" forKey:key];
+            [self.dimmingList setObject:@"Not Found" forKey:key];
+        }
+        i++;
     }
+    NSLog(@"count:%d",i);
     [pool drain];
 }
 
@@ -240,12 +256,18 @@ const float unselectedRowHeight = 1.0;
         
         if ([_powerList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]]) {
             cell.lblPower.text = [_powerList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]];
+        } else {
+            cell.lblPower.text = @"Not Found";
         }
         if ([_runningList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]]) {
             cell.lblRunning.text = [_runningList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]];
+        } else {
+            cell.lblRunning.text = @"Not Found";
         }
         if ([_dimmingList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]]) {
             cell.lblDimming.text = [_dimmingList objectForKey:[[_lights objectAtIndex:indexPath.row/2] objectAtIndex:0]];
+        } else {
+            cell.lblDimming.text = @"Not Found";
         }
         
 //        ((UILabel *)([cell.contentView.subviews lastObject])).text = [NSString stringWithFormat:@"Power:%f(w)",1.0f];

@@ -21,10 +21,10 @@
 
 @property (nonatomic, strong) UITableView *tblView;
 
-@property (nonatomic, strong) NSMutableDictionary *powerList;
+@property (atomic, strong) NSMutableDictionary *powerList;
 
-@property (nonatomic, strong) NSMutableDictionary *runningList;
+@property (atomic, strong) NSMutableDictionary *runningList;
 
-@property (nonatomic, strong) NSMutableDictionary *dimmingList;
+@property (atomic, strong) NSMutableDictionary *dimmingList;
 
 @end
