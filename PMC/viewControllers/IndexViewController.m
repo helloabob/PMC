@@ -138,8 +138,10 @@
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSArray *array = [[PMCTool sharedInstance] getLightsInOffice];
         if (array && array.count > 0) {
+            [hud hide:YES];
+            [self gotoNextView];
 //            [self processResult:YES withHUD:hud withErrorString:nil withLightArray:array withUserId:nil withOfficeId:nil];
-            [self processResult:NO withHUD:hud withErrorString:@"Room number is invalid" withLightArray:nil withUserId:nil withOfficeId:nil];
+//            [self processResult:NO withHUD:hud withErrorString:@"Room number is invalid" withLightArray:nil withUserId:nil withOfficeId:nil];
         } else {
             [self processResult:NO withHUD:hud withErrorString:@"Room number is invalid" withLightArray:nil withUserId:nil withOfficeId:nil];
         }
